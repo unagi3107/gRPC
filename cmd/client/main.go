@@ -13,6 +13,9 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
+
+	_ "google.golang.org/genproto/googleapis/rpc/errdetails"
 )
 
 var (
@@ -77,7 +80,13 @@ func Hello() {
 	}
 	res, err := client.Hello(context.Background(), req)
 	if err != nil {
-		fmt.Println(err)
+		if stat, ok := status.FromError(err); ok {
+			fmt.Printf("code: %s\n", stat.Code())
+			fmt.Printf("message: %s\n", stat.Message())
+			fmt.Printf("details: %s\n", stat.Details())
+		} else {
+			fmt.Println(err)
+		}
 	} else {
 		fmt.Println(res.GetMessage())
 	}
