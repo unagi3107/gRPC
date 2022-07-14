@@ -95,7 +95,12 @@ func main() {
 		panic(err)
 	}
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(
+		grpc.ChainStreamInterceptor(
+			myStreamServerInterceptor1,
+			myStreamServerInterceptor2,
+		),
+	)
 
 	hellopb.RegisterGreetingServiceServer(s, NewServer())
 	reflection.Register(s)
